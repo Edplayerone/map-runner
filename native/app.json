@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "Map Runner",
+    "slug": "map-runner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#111827",
+    "ios": {
+      "bundleIdentifier": "com.edplayerone.maprunner",
+      "supportsTablet": false,
+      "infoPlist": {
+        "UIBackgroundModes": ["location", "audio"],
+        "NSLocationWhenInUseUsageDescription": "Map Runner uses your location to plan routes and guide you with voice directions while you run.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Map Runner uses your location during runs to speak turn-by-turn directions and record your route, including while the screen is locked."
+      }
+    },
+    "android": {
+      "package": "com.edplayerone.maprunner",
+      "adaptiveIcon": {
+        "backgroundColor": "#111827",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "WAKE_LOCK"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-audio",
+      "@maplibre/maplibre-react-native",
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "locationAlwaysAndWhenInUsePermission": "Map Runner uses your location during runs to speak turn-by-turn directions and record your route, including while the screen is off."
+        }
+      ]
+    ]
+  }
+}
