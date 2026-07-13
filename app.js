@@ -186,7 +186,7 @@ function setRoute(r) {
   route = r;
   if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
   if (r) {
-    routeLine = L.polyline(r.shape, { color: '#10b981', weight: 5, opacity: 0.9 }).addTo(map);
+    routeLine = L.polyline(r.shape, { color: '#C6F432', weight: 5, opacity: 0.95 }).addTo(map);
     const turns = r.maneuvers.filter((m) => ![1, 2, 3, 4, 5, 6].includes(m.type)).length;
     $('route-miles').textContent = `${(r.totalMeters / METERS_PER_MILE).toFixed(2)} mi`;
     $('route-turns').textContent = `${turns} turn${turns === 1 ? '' : 's'}`;
@@ -317,7 +317,8 @@ function startRun() {
   showPanel('run');
   $('stats').classList.remove('hidden');
   $('turn-card').classList.remove('hidden');
-  trailLine = L.polyline([], { color: '#3b82f6', weight: 4, opacity: 0.9 }).addTo(map);
+  if (routeLine) routeLine.setStyle({ color: '#55622B' }); // route ahead dims; your trail burns volt
+  trailLine = L.polyline([], { color: '#C6F432', weight: 4, opacity: 0.95 }).addTo(map);
 
   acquireWakeLock();
   watchId = navigator.geolocation.watchPosition(onFix, onFixError, {
@@ -402,9 +403,9 @@ function guide(here) {
     if (Date.now() - run.offRouteSince > 12000 &&
         Date.now() - run.lastOffRouteSpokenAt > OFF_ROUTE_REMIND_MS) {
       run.lastOffRouteSpokenAt = Date.now();
-      speak('You are off the route. Head back toward the green line.');
+      speak('You are off the route. Head back toward the route.');
       $('turn-dist').textContent = '';
-      $('turn-instruction').textContent = 'Off route — return to the green path';
+      $('turn-instruction').textContent = 'Off route — return to the line';
       $('turn-icon').textContent = '⚠';
     }
     return;
@@ -476,12 +477,12 @@ function pauseRun() {
   if (mode === 'running') {
     mode = 'paused';
     run.activeMs += Date.now() - run.lastResumeAt;
-    $('btn-pause').textContent = '▶ Resume';
+    $('btn-pause').textContent = 'Resume';
     speak('Run paused.', true);
   } else if (mode === 'paused') {
     mode = 'running';
     run.lastResumeAt = Date.now();
-    $('btn-pause').textContent = '⏸ Pause';
+    $('btn-pause').textContent = 'Pause';
     speak('Resuming run.', true);
   }
 }
@@ -515,6 +516,7 @@ function saveRun(record) {
 }
 
 function newRoute() {
+  // (routeLine is removed in clearPlan; fresh routes draw volt again)
   mode = 'plan';
   run = null;
   clearPlan();
@@ -530,9 +532,9 @@ function showPanel(name) {
 
 function init() {
   map = L.map('map', { zoomControl: false }).setView([37.7749, -122.4194], 14);
-  tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
   }).addTo(map);
 
   map.on('click', (e) => { if (mode === 'plan') addWaypoint(e.latlng); });
