@@ -1,14 +1,17 @@
 name: Deploy to GitHub Pages
 
+# GitHub Pages serves this site from the gh-pages branch (branch-based
+# hosting was auto-enabled when gh-pages was first pushed). The workflow
+# token isn't allowed to manage the Pages site via the API, so instead of
+# actions/deploy-pages we simply mirror main into gh-pages on every merge.
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
@@ -17,16 +20,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Mirror main to gh-pages
+        run: git push origin HEAD:gh-pages --force
