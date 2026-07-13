@@ -1,6 +1,6 @@
 /* Minimal service worker: cache the app shell so it opens fast.
    Map tiles, routing, and GPS still need network. */
-const CACHE = 'map-runner-v2';
+const CACHE = 'map-runner-v3';
 const SHELL = ['.', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest', 'icon.svg',
   'vendor/leaflet/leaflet.js', 'vendor/leaflet/leaflet.css'];
 

@@ -6,12 +6,15 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#111827",
+    "backgroundColor": "#141513",
     "ios": {
       "bundleIdentifier": "com.edplayerone.maprunner",
       "supportsTablet": false,
       "infoPlist": {
-        "UIBackgroundModes": ["location", "audio"],
+        "UIBackgroundModes": [
+          "location",
+          "audio"
+        ],
         "NSLocationWhenInUseUsageDescription": "Map Runner uses your location to plan routes and guide you with voice directions while you run.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Map Runner uses your location during runs to speak turn-by-turn directions and record your route, including while the screen is locked."
       }
@@ -19,7 +22,7 @@
     "android": {
       "package": "com.edplayerone.maprunner",
       "adaptiveIcon": {
-        "backgroundColor": "#111827",
+        "backgroundColor": "#141513",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -44,7 +47,8 @@
           "isAndroidForegroundServiceEnabled": true,
           "locationAlwaysAndWhenInUsePermission": "Map Runner uses your location during runs to speak turn-by-turn directions and record your route, including while the screen is off."
         }
-      ]
+      ],
+      "expo-sharing"
     ]
   }
 }

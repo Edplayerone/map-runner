@@ -92,6 +92,7 @@ function speak(text, interrupt = false) {
   if (interrupt) speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.rate = 1.0;
+  u.volume = 0.7;  // softer, so it sits alongside podcasts/audiobooks
   u.lang = 'en-US';
   speechSynthesis.speak(u);
 }
@@ -135,6 +136,18 @@ async function fetchRoute() {
   const body = {
     locations,
     costing: 'pedestrian',
+    // Bias toward straighter runs on real streets: penalize turns hard,
+    // avoid alleys/driveways/stairs, mildly discourage tiny connector
+    // walkways (kept mild so genuine trails still route well).
+    costing_options: {
+      pedestrian: {
+        maneuver_penalty: 45,
+        alley_factor: 4,
+        driveway_factor: 10,
+        step_penalty: 120,
+        walkway_factor: 1.3,
+      },
+    },
     directions_options: { units: 'miles', language: 'en-US' },
   };
   toast('Routing…', 1500);
@@ -364,7 +377,7 @@ function onFix(pos) {
     if (d < 200) run.traveled += d;  // ignore teleport glitches
   }
   run.lastFix = here;
-  run.trail.push([latitude, longitude]);
+  run.trail.push([latitude, longitude, Date.now()]);
   trailLine.addLatLng([latitude, longitude]);
   map.panTo(here, { animate: true });
 
@@ -507,6 +520,34 @@ function finishRun() {
   saveRun({ date: new Date().toISOString(), miles, seconds: sec, trail: run.trail });
 }
 
+function buildGpx(trail, name) {
+  const pts = trail
+    .map((p) => `      <trkpt lat="${p[0].toFixed(7)}" lon="${p[1].toFixed(7)}">` +
+      `<time>${new Date(p[2] || Date.now()).toISOString()}</time></trkpt>`)
+    .join('\n');
+  const start = trail.length ? new Date(trail[0][2] || Date.now()) : new Date();
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Map Runner" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>${name}</name><time>${start.toISOString()}</time></metadata>
+  <trk><name>${name}</name><type>running</type><trkseg>
+${pts}
+  </trkseg></trk>
+</gpx>
+`;
+}
+
+function exportGpx() {
+  if (!run || run.trail.length < 2) { toast('No GPS trail recorded for this run.'); return; }
+  const date = new Date(run.trail[0][2] || Date.now());
+  const gpx = buildGpx(run.trail, `Map Runner ${date.toLocaleDateString()}`);
+  const blob = new Blob([gpx], { type: 'application/gpx+xml' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `map-runner-${date.toISOString().slice(0, 10)}.gpx`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 function saveRun(record) {
   try {
     const runs = JSON.parse(localStorage.getItem('mapRunnerRuns') || '[]');
@@ -558,6 +599,7 @@ function init() {
   $('btn-pause').addEventListener('click', pauseRun);
   $('btn-finish').addEventListener('click', finishRun);
   $('btn-new').addEventListener('click', newRoute);
+  $('btn-gpx').addEventListener('click', exportGpx);
   $('btn-mute').addEventListener('click', () => {
     muted = !muted;
     if (muted) speechSynthesis.cancel();
