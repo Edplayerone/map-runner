@@ -43,11 +43,10 @@ which covers running/hiking trails far better than Google's walking directions.
 The app is static files — any HTTPS host works (**HTTPS is required** for GPS,
 voice, and wake lock).
 
-**GitHub Pages (recommended, free):** this repo includes a deploy workflow.
-After merging to `main`, go to the repo's **Settings → Pages** and set
-**Source: GitHub Actions**. Your app will be live at
-`https://<your-username>.github.io/map-runner/`. Open that URL on your phone
-and (optionally) **Add to Home Screen**.
+**GitHub Pages (live):** the app is served from the `gh-pages` branch at
+**https://edplayerone.github.io/map-runner/**. A workflow mirrors `main` into
+`gh-pages` on every merge, so deploys are automatic. Open that URL on your
+phone and (optionally) **Add to Home Screen**.
 
 **Local testing:** `npx serve .` and open `http://localhost:3000` (localhost
 counts as secure, so GPS works).
