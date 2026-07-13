@@ -36,17 +36,41 @@ import {
 } from './src/routing';
 import { initAudio, isMuted, setMuted, speak } from './src/speech';
 
+/* Volt palette */
+const C = {
+  ground: '#141513',
+  panel: '#1B1D1A',
+  panelLine: '#2C2F2A',
+  card: '#1D1F1C',
+  cardLine: '#33362F',
+  btn: '#232622',
+  btnLine: '#383C35',
+  ink: '#F2F4EE',
+  mut: '#9AA095',
+  volt: '#C6F432',
+  voltText: '#A7CF2B',
+  onVolt: '#10120D',
+  ice: '#6FCBDE',
+  moss: '#55622B',
+  stop: '#FF7A6B',
+  stopLine: '#6B3B34',
+};
+
 const OSM_STYLE: StyleSpecification = {
   version: 8,
   sources: {
-    osm: {
+    carto: {
       type: 'raster',
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tiles: [
+        'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+        'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+        'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+      ],
       tileSize: 256,
-      attribution: '© OpenStreetMap contributors',
+      attribution: '© OpenStreetMap contributors © CARTO',
     },
   },
-  layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+  layers: [{ id: 'carto', type: 'raster', source: 'carto' }],
 };
 
 const TURN_ICONS: Record<number, string> = {
@@ -254,7 +278,9 @@ function Main() {
     <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
       <StatusBar style="light" />
       <View style={styles.topbar}>
-        <Text style={styles.brand}>🏃 Map Runner</Text>
+        <Text style={styles.brand}>
+          MAP<Text style={{ color: C.volt }}>RUNNER</Text>
+        </Text>
         {inRun && (
           <View style={styles.stats}>
             <Stat value={miles.toFixed(2)} label="mi" />
@@ -277,7 +303,7 @@ function Main() {
               <Layer
                 id="route-line"
                 type="line"
-                paint={{ 'line-color': '#10b981', 'line-width': 5, 'line-opacity': 0.9 }}
+                paint={{ 'line-color': inRun ? C.moss : C.volt, 'line-width': 5, 'line-opacity': 0.95 }}
               />
             </GeoJSONSource>
           )}
@@ -286,7 +312,7 @@ function Main() {
               <Layer
                 id="trail-line"
                 type="line"
-                paint={{ 'line-color': '#3b82f6', 'line-width': 4, 'line-opacity': 0.9 }}
+                paint={{ 'line-color': C.volt, 'line-width': 4, 'line-opacity': 0.95 }}
               />
             </GeoJSONSource>
           )}
@@ -297,9 +323,9 @@ function Main() {
                 type="circle"
                 paint={{
                   'circle-radius': 6,
-                  'circle-color': '#10b981',
-                  'circle-stroke-color': '#ffffff',
-                  'circle-stroke-width': 2,
+                  'circle-color': C.volt,
+                  'circle-stroke-color': C.ground,
+                  'circle-stroke-width': 2.5,
                 }}
               />
             </GeoJSONSource>
@@ -346,17 +372,17 @@ function Main() {
                 : 'Tap the map to drop route points — the path snaps to runnable roads & trails.'}
             </Text>
             <View style={styles.row}>
-              <Btn label="📍 Locate" onPress={locateMe} />
-              <Btn label="🔀 Loop…" onPress={() => setLoopOpen(true)} />
-              <Btn label="↩ Undo" onPress={undo} />
-              <Btn label="✕ Clear" onPress={clearAll} />
+              <Btn label="Locate" onPress={locateMe} />
+              <Btn label="Loop…" onPress={() => setLoopOpen(true)} />
+              <Btn label="Undo" onPress={undo} />
+              <Btn label="Clear" onPress={clearAll} />
             </View>
             <View style={styles.row}>
               <Btn
-                label="🔈 Test voice"
+                label="Test Voice"
                 onPress={() => speak('Voice check. Turn-by-turn directions will sound like this.', true)}
               />
-              <Btn label="▶ Start Run" primary disabled={!route} onPress={start} />
+              <Btn label="Start Run" primary disabled={!route} onPress={start} />
             </View>
           </>
         )}
@@ -370,7 +396,7 @@ function Main() {
                 value={loopMiles}
                 onChangeText={setLoopMiles}
                 keyboardType="decimal-pad"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={C.mut}
                 autoFocus
                 inputAccessoryViewID="loop-done"
               />
@@ -399,10 +425,10 @@ function Main() {
           <>
             <View style={styles.row}>
               <Btn
-                label={run.mode === 'paused' ? '▶ Resume' : '⏸ Pause'}
+                label={run.mode === 'paused' ? 'Resume' : 'Pause'}
                 onPress={() => engine.pauseResume()}
               />
-              <Btn label="■ Finish" danger onPress={finish} />
+              <Btn label="Finish" danger onPress={finish} />
             </View>
             <Text style={styles.hintSmall}>
               Voice keeps guiding with the screen locked or another app open.
@@ -419,7 +445,7 @@ function Main() {
                 : ''}
             </Text>
             <View style={styles.row}>
-              <Btn label="＋ New route" primary onPress={clearAll} />
+              <Btn label="New Route" primary onPress={clearAll} />
             </View>
           </>
         )}
@@ -462,24 +488,51 @@ function Btn({
         pressed && { opacity: 0.7 },
       ]}
     >
-      <Text style={[styles.btnText, primary && { color: '#052e22' }]}>{label}</Text>
+      <Text
+        style={[
+          styles.btnText,
+          primary && { color: C.onVolt, fontStyle: 'italic', fontSize: 12.5 },
+          danger && { color: C.stop },
+        ]}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#111827' },
+  root: { flex: 1, backgroundColor: C.ground },
   topbar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 8,
   },
-  brand: { color: '#f9fafb', fontWeight: '700', fontSize: 16 },
-  stats: { flexDirection: 'row', gap: 16 },
-  statValue: { color: '#f9fafb', fontSize: 18, fontWeight: '700', fontVariant: ['tabular-nums'] },
-  statLabel: { color: '#9ca3af', fontSize: 10, textTransform: 'uppercase' },
+  brand: {
+    color: C.ink,
+    fontWeight: '800',
+    fontStyle: 'italic',
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
+  stats: { flexDirection: 'row', gap: 18 },
+  statValue: {
+    color: C.ink,
+    fontSize: 19,
+    fontWeight: '800',
+    fontStyle: 'italic',
+    fontVariant: ['tabular-nums'],
+  },
+  statLabel: {
+    color: C.mut,
+    fontSize: 9,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    textAlign: 'center',
+  },
   mapWrap: { flex: 1 },
   map: { flex: 1 },
   turnCard: {
@@ -490,57 +543,129 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#065f46',
-    borderRadius: 14,
-    padding: 12,
-  },
-  turnIcon: { color: '#f9fafb', fontSize: 30, fontWeight: '700', minWidth: 36, textAlign: 'center' },
-  turnDist: { color: '#a7f3d0', fontSize: 12 },
-  turnText: { color: '#f9fafb', fontSize: 15, fontWeight: '600' },
-  muteBtn: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: C.card,
+    borderWidth: 1,
+    borderColor: C.cardLine,
+    borderLeftWidth: 4,
+    borderLeftColor: C.volt,
     borderRadius: 10,
+    padding: 11,
+  },
+  turnIcon: {
+    color: C.onVolt,
+    backgroundColor: C.volt,
+    fontSize: 22,
+    fontWeight: '800',
+    minWidth: 38,
+    height: 38,
+    lineHeight: 38,
+    textAlign: 'center',
+    borderRadius: 7,
+    overflow: 'hidden',
+  },
+  turnDist: {
+    color: C.voltText,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  turnText: { color: C.ink, fontSize: 14, fontWeight: '700' },
+  muteBtn: {
+    backgroundColor: C.btn,
+    borderWidth: 1,
+    borderColor: C.btnLine,
+    borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
-  panel: { backgroundColor: '#1f2937', padding: 14, gap: 8 },
-  hint: { color: '#9ca3af', fontSize: 13, marginBottom: 4 },
-  hintSmall: { color: '#9ca3af', fontSize: 12, marginTop: 4 },
+  panel: {
+    backgroundColor: C.panel,
+    borderTopWidth: 1,
+    borderTopColor: C.panelLine,
+    padding: 15,
+    gap: 9,
+  },
+  hint: { color: C.mut, fontSize: 12, letterSpacing: 0.3, marginBottom: 4 },
+  hintSmall: {
+    color: C.mut,
+    fontSize: 11,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    marginTop: 4,
+  },
   summary: {
-    color: '#f9fafb',
+    color: C.ink,
     fontSize: 15,
-    backgroundColor: '#111827',
-    borderRadius: 10,
+    fontWeight: '800',
+    fontStyle: 'italic',
+    backgroundColor: C.btn,
+    borderWidth: 1,
+    borderColor: C.cardLine,
+    borderLeftWidth: 3,
+    borderLeftColor: C.volt,
+    borderRadius: 6,
     padding: 12,
     marginBottom: 4,
   },
   row: { flexDirection: 'row', gap: 8 },
   btn: {
     flex: 1,
-    backgroundColor: '#374151',
-    borderRadius: 12,
-    paddingVertical: 12,
+    backgroundColor: C.btn,
+    borderWidth: 1,
+    borderColor: C.btnLine,
+    borderRadius: 6,
+    paddingVertical: 13,
     alignItems: 'center',
   },
-  btnPrimary: { backgroundColor: '#10b981' },
-  btnDanger: { backgroundColor: '#dc2626' },
-  btnText: { color: '#f9fafb', fontWeight: '600', fontSize: 13 },
+  btnPrimary: {
+    backgroundColor: C.volt,
+    borderColor: C.volt,
+    shadowColor: C.volt,
+    shadowOpacity: 0.35,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 4,
+  },
+  btnDanger: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: C.stopLine,
+  },
+  btnText: {
+    color: C.ink,
+    fontWeight: '800',
+    fontSize: 11.5,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
   input: {
-    width: 80,
-    backgroundColor: '#111827',
-    color: '#f9fafb',
-    borderRadius: 12,
+    width: 76,
+    backgroundColor: C.onVolt,
+    color: C.ink,
+    borderWidth: 1.5,
+    borderColor: C.volt,
+    borderRadius: 6,
     textAlign: 'center',
-    fontSize: 16,
-    paddingVertical: 10,
+    fontSize: 17,
+    fontWeight: '800',
+    fontStyle: 'italic',
+    paddingVertical: 11,
   },
   doneBar: {
-    backgroundColor: '#1f2937',
+    backgroundColor: C.panel,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#374151',
+    borderTopColor: C.panelLine,
     alignItems: 'flex-end',
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  doneText: { color: '#10b981', fontSize: 16, fontWeight: '700' },
+  doneText: {
+    color: C.volt,
+    fontSize: 14,
+    fontWeight: '800',
+    fontStyle: 'italic',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
 });

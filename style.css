@@ -1,10 +1,30 @@
+/* Volt design system: near-black ground, electric volt accent, squared
+   engineered buttons — sports-watch energy. */
+:root {
+  --ground: #141513;
+  --panel: #1b1d1a;
+  --panel-line: #2c2f2a;
+  --card: #1d1f1c;
+  --card-line: #33362f;
+  --btn: #232622;
+  --btn-line: #383c35;
+  --ink: #f2f4ee;
+  --mut: #9aa095;
+  --volt: #c6f432;
+  --volt-text: #a7cf2b;
+  --on-volt: #10120d;
+  --ice: #6fcbde;
+  --stop: #ff7a6b;
+  --stop-line: #6b3b34;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #111827;
-  color: #f9fafb;
+  background: var(--ground);
+  color: var(--ink);
   overscroll-behavior: none;
 }
 
@@ -20,19 +40,38 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: calc(env(safe-area-inset-top, 0px) + 8px) 14px 8px;
-  background: #111827;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px 8px;
+  background: var(--ground);
   z-index: 1000;
 }
 
-.brand { font-weight: 700; font-size: 16px; white-space: nowrap; }
+.brand {
+  font-weight: 800;
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.brand em { font-style: italic; color: var(--volt); }
 
-.stats { display: flex; gap: 16px; }
+.stats { display: flex; gap: 18px; }
 .stat { text-align: center; line-height: 1.1; }
-.stat span { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.stat label { display: block; font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: .05em; }
+.stat span {
+  font-size: 20px;
+  font-weight: 800;
+  font-style: italic;
+  font-variant-numeric: tabular-nums;
+}
+.stat label {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--mut);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
 
-#map { flex: 1; min-height: 0; z-index: 1; }
+#map { flex: 1; min-height: 0; z-index: 1; background: var(--ground); }
 
 /* Next-turn banner shown while running */
 .turn-card {
@@ -44,71 +83,115 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #065f46;
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-left: 4px solid var(--volt);
+  border-radius: 10px;
+  padding: 11px 13px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.45);
 }
-.turn-icon { font-size: 34px; font-weight: 700; min-width: 40px; text-align: center; }
+.turn-icon {
+  min-width: 38px;
+  height: 38px;
+  line-height: 38px;
+  text-align: center;
+  border-radius: 7px;
+  background: var(--volt);
+  color: var(--on-volt);
+  font-size: 22px;
+  font-weight: 800;
+}
 .turn-text { flex: 1; min-width: 0; }
-.turn-dist { font-size: 13px; color: #a7f3d0; }
-.turn-instruction { font-size: 16px; font-weight: 600; }
+.turn-dist {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--volt-text);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+.turn-instruction { font-size: 15px; font-weight: 700; }
 
 .icon-btn {
-  background: rgba(255,255,255,.12);
-  border: none;
+  background: var(--btn);
+  border: 1px solid var(--btn-line);
   color: inherit;
-  font-size: 20px;
-  border-radius: 10px;
+  font-size: 18px;
+  border-radius: 6px;
   padding: 8px 10px;
 }
 
 #panel {
-  background: #1f2937;
-  padding: 12px 14px calc(env(safe-area-inset-bottom, 0px) + 12px);
+  background: var(--panel);
+  border-top: 1px solid var(--panel-line);
+  padding: 13px 16px calc(env(safe-area-inset-bottom, 0px) + 13px);
   z-index: 1000;
-  box-shadow: 0 -4px 16px rgba(0,0,0,.35);
 }
 
-.hint { font-size: 13px; color: #9ca3af; margin-bottom: 10px; }
-.hint.small { margin-top: 10px; margin-bottom: 0; font-size: 12px; }
+.hint { font-size: 12px; color: var(--mut); letter-spacing: .02em; margin-bottom: 10px; }
+.hint.small {
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
 
 .route-summary {
   font-size: 14px;
-  background: #111827;
-  border-radius: 10px;
+  font-weight: 800;
+  font-style: italic;
+  background: var(--btn);
+  border: 1px solid var(--card-line);
+  border-left: 3px solid var(--volt);
+  border-radius: 6px;
   padding: 10px 12px;
   margin-bottom: 10px;
 }
+.route-summary span { color: var(--mut); font-weight: 600; font-style: normal; }
 
 .btn-row { display: flex; gap: 8px; }
 .btn-row + .btn-row { margin-top: 8px; }
 
 .btn {
   flex: 1;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 8px;
-  font-size: 14px;
-  font-weight: 600;
-  background: #374151;
-  color: #f9fafb;
+  border: 1px solid var(--btn-line);
+  border-radius: 6px;
+  padding: 13px 4px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  background: var(--btn);
+  color: var(--ink);
   touch-action: manipulation;
 }
-.btn:active { filter: brightness(1.2); }
+.btn:active { filter: brightness(1.25); }
 .btn:disabled { opacity: .4; }
-.btn.primary { background: #10b981; color: #052e22; }
-.btn.danger { background: #dc2626; }
+.btn.primary {
+  background: var(--volt);
+  border-color: var(--volt);
+  color: var(--on-volt);
+  font-style: italic;
+  font-size: 12.5px;
+  box-shadow: 0 0 18px rgba(198, 244, 50, .25);
+}
+.btn.danger {
+  background: transparent;
+  color: var(--stop);
+  border: 1.5px solid var(--stop-line);
+}
 
 #loop-miles {
-  flex: 0 0 80px;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 16px;
+  flex: 0 0 76px;
+  border: 1.5px solid var(--volt);
+  border-radius: 6px;
+  padding: 11px;
+  font-size: 17px;
+  font-weight: 800;
+  font-style: italic;
   text-align: center;
-  background: #111827;
-  color: #f9fafb;
+  background: var(--on-volt);
+  color: var(--ink);
 }
 
 .toast {
@@ -116,31 +199,38 @@ body {
   bottom: 140px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,.85);
-  color: #fff;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  color: var(--ink);
   padding: 10px 16px;
-  border-radius: 20px;
-  font-size: 13px;
+  border-radius: 6px;
+  font-size: 12.5px;
   z-index: 2000;
   max-width: 85%;
   text-align: center;
 }
 
 /* Leaflet dark-friendly tweaks */
-.leaflet-control-attribution { font-size: 9px; }
+.leaflet-control-attribution {
+  font-size: 9px;
+  background: rgba(20, 21, 19, .7) !important;
+  color: var(--mut) !important;
+}
+.leaflet-control-attribution a { color: var(--mut) !important; }
+
 .wp-marker {
-  background: #10b981;
-  border: 2px solid #fff;
+  background: var(--volt);
+  border: 2.5px solid var(--ground);
   border-radius: 50%;
   width: 14px !important;
   height: 14px !important;
-  box-shadow: 0 1px 4px rgba(0,0,0,.5);
+  box-shadow: 0 1px 4px rgba(0,0,0,.6);
 }
 .me-marker {
-  background: #3b82f6;
-  border: 3px solid #fff;
+  background: var(--ice);
+  border: 3px solid var(--ground);
   border-radius: 50%;
   width: 18px !important;
   height: 18px !important;
-  box-shadow: 0 0 0 6px rgba(59,130,246,.25);
+  box-shadow: 0 0 0 6px rgba(111, 203, 222, .25);
 }
