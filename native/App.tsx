@@ -13,6 +13,10 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import {
   Alert,
+  InputAccessoryView,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -157,7 +161,8 @@ function Main() {
   }
 
   function onMapPress(lngLat: [number, number]) {
-    if (!planning) return;
+    Keyboard.dismiss();
+    if (!planning || loopOpen) return;
     const [lng, lat] = lngLat;
     const next = [...waypoints, { lat, lng }];
     setWaypoints(next);
@@ -191,6 +196,7 @@ function Main() {
   }
 
   async function makeLoop() {
+    Keyboard.dismiss();
     const miles = parseFloat(loopMiles);
     if (!miles || miles <= 0) return;
     setLoopOpen(false);
@@ -326,7 +332,10 @@ function Main() {
         )}
       </View>
 
-      <View style={styles.panel}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.panel}
+      >
         {planning && !loopOpen && (
           <>
             <Text style={styles.hint}>
@@ -362,10 +371,27 @@ function Main() {
                 onChangeText={setLoopMiles}
                 keyboardType="decimal-pad"
                 placeholderTextColor="#9ca3af"
+                autoFocus
+                inputAccessoryViewID="loop-done"
               />
               <Btn label="Generate" primary onPress={makeLoop} />
-              <Btn label="Cancel" onPress={() => setLoopOpen(false)} />
+              <Btn
+                label="Cancel"
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setLoopOpen(false);
+                }}
+              />
             </View>
+            {Platform.OS === 'ios' && (
+              <InputAccessoryView nativeID="loop-done">
+                <View style={styles.doneBar}>
+                  <Pressable onPress={() => Keyboard.dismiss()} hitSlop={10}>
+                    <Text style={styles.doneText}>Done</Text>
+                  </Pressable>
+                </View>
+              </InputAccessoryView>
+            )}
           </>
         )}
 
@@ -397,7 +423,7 @@ function Main() {
             </View>
           </>
         )}
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -508,4 +534,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 10,
   },
+  doneBar: {
+    backgroundColor: '#1f2937',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#374151',
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  doneText: { color: '#10b981', fontSize: 16, fontWeight: '700' },
 });
