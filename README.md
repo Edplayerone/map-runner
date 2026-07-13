@@ -66,10 +66,18 @@ Turn guidance: the app map-matches your GPS position onto the planned route
 distance along the route to the next maneuver, and speaks an early alert
 (~400 ft out) plus the final instruction at the turn.
 
+## Native app
+
+The [`native/`](native/) folder contains the iPhone/Android version (Expo /
+React Native) with **true background navigation**: voice directions keep
+playing with the screen locked or another app open, ducking your music like
+Google Maps. See [native/README.md](native/README.md) for build & install
+steps.
+
 ## Roadmap
 
 - [x] Phase 1 (MVP): draw route → voice turn-by-turn → record run
 - [x] Phase 2 (first cut): random N-mile loop generator
+- [x] Phase 3: native app with locked-screen background navigation (`native/`)
 - [ ] Save/reload favorite routes; run history screen
 - [ ] Smarter loop generation (prefer trails/parks, elevation-aware)
-- [ ] Native app wrapper for true locked-screen background navigation
