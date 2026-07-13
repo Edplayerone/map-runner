@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Map Runner</title>
+  <meta name="description" content="Draw a running route and get spoken turn-by-turn directions while you run.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header id="topbar">
+    <div class="brand">🏃 Map Runner</div>
+    <div id="stats" class="stats hidden">
+      <div class="stat"><span id="stat-dist">0.00</span><label>mi</label></div>
+      <div class="stat"><span id="stat-time">0:00</span><label>time</label></div>
+      <div class="stat"><span id="stat-pace">–:––</span><label>/mi</label></div>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <div id="turn-card" class="turn-card hidden">
+    <div id="turn-icon" class="turn-icon">↑</div>
+    <div class="turn-text">
+      <div id="turn-dist" class="turn-dist"></div>
+      <div id="turn-instruction" class="turn-instruction"></div>
+    </div>
+    <button id="btn-mute" class="icon-btn" title="Mute voice">🔊</button>
+  </div>
+
+  <div id="panel">
+    <!-- Plan mode -->
+    <div id="panel-plan" class="panel-page">
+      <p id="plan-hint" class="hint">Tap the map to drop route points — the path snaps to runnable roads &amp; trails.</p>
+      <div id="route-summary" class="route-summary hidden">
+        Route: <b id="route-miles">0.0 mi</b> · <span id="route-turns">0 turns</span>
+      </div>
+      <div class="btn-row">
+        <button id="btn-locate" class="btn">📍 My location</button>
+        <button id="btn-loop" class="btn">🔀 Loop…</button>
+        <button id="btn-undo" class="btn">↩ Undo</button>
+        <button id="btn-clear" class="btn">✕ Clear</button>
+      </div>
+      <div class="btn-row">
+        <button id="btn-test-voice" class="btn">🔈 Test voice</button>
+        <button id="btn-start" class="btn primary" disabled>▶ Start Run</button>
+      </div>
+    </div>
+
+    <!-- Loop generator -->
+    <div id="panel-loop" class="panel-page hidden">
+      <p class="hint">Generate a random loop from your location. How many miles?</p>
+      <div class="btn-row">
+        <input id="loop-miles" type="number" inputmode="decimal" min="0.5" max="26" step="0.5" value="3">
+        <button id="btn-loop-go" class="btn primary">Generate loop</button>
+        <button id="btn-loop-cancel" class="btn">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Running mode -->
+    <div id="panel-run" class="panel-page hidden">
+      <div class="btn-row">
+        <button id="btn-pause" class="btn">⏸ Pause</button>
+        <button id="btn-finish" class="btn danger">■ Finish</button>
+      </div>
+      <p class="hint small">Keep this screen on (the app holds a wake lock). Voice plays through your headphones.</p>
+    </div>
+
+    <!-- Finished mode -->
+    <div id="panel-done" class="panel-page hidden">
+      <div id="run-summary" class="route-summary"></div>
+      <div class="btn-row">
+        <button id="btn-new" class="btn primary">＋ New route</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
