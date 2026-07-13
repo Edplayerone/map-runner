@@ -15,10 +15,14 @@ const MIN_ACCURACY_M = 40;
 
 export type Mode = 'plan' | 'running' | 'paused' | 'done';
 
+export interface TrailPoint extends LatLng {
+  t: number; // epoch ms
+}
+
 export interface RunState {
   mode: Mode;
   route: Route | null;
-  trail: LatLng[];
+  trail: TrailPoint[];
   traveled: number; // meters
   activeMs: number;
   lastResumeAt: number;
@@ -188,7 +192,7 @@ export function onLocation(lat: number, lng: number, accuracy: number | null): v
     if (d < 200) state = { ...state, traveled: state.traveled + d };
   }
   internal.lastFix = here;
-  state = { ...state, trail: [...state.trail, here] };
+  state = { ...state, trail: [...state.trail, { ...here, t: Date.now() }] };
 
   announceMileSplits();
   guide(here);

@@ -27,8 +27,12 @@ export function isMuted(): boolean {
   return muted;
 }
 
+// Softer than full blast so it sits alongside podcasts/audiobooks
+// instead of shouting over them.
+const VOICE_VOLUME = 0.7;
+
 export function speak(text: string, interrupt = false): void {
   if (muted || !text) return;
   if (interrupt) Speech.stop();
-  Speech.speak(text, { language: 'en-US', rate: 1.0 });
+  Speech.speak(text, { language: 'en-US', rate: 1.0, volume: VOICE_VOLUME });
 }

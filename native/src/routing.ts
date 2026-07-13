@@ -130,6 +130,18 @@ export async function fetchRoute(waypoints: LatLng[]): Promise<Route> {
     body: JSON.stringify({
       locations,
       costing: 'pedestrian',
+      // Bias toward straighter runs on real streets: penalize turns hard,
+      // avoid alleys/driveways/stairs, mildly discourage tiny connector
+      // walkways (kept mild so genuine trails still route well).
+      costing_options: {
+        pedestrian: {
+          maneuver_penalty: 45,
+          alley_factor: 4,
+          driveway_factor: 10,
+          step_penalty: 120,
+          walkway_factor: 1.3,
+        },
+      },
       directions_options: { units: 'miles', language: 'en-US' },
     }),
   });

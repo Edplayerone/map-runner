@@ -25,7 +25,11 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
+
 import * as engine from './src/engine';
+import { buildGpx } from './src/gpx';
 import { startLocationUpdates, stopLocationUpdates } from './src/locationTask';
 import {
   LatLng,
@@ -264,6 +268,28 @@ function Main() {
     setSummary(engine.finishRun());
   }
 
+  // Share the recorded run as a GPX file — Garmin Connect and Strava
+  // accept it as an activity import.
+  async function exportGpx() {
+    const trail = engine.getState().trail;
+    if (trail.length < 2) {
+      Alert.alert('Nothing to export', 'No GPS trail was recorded for this run.');
+      return;
+    }
+    try {
+      const date = new Date(trail[0].t);
+      const stamp = date.toISOString().slice(0, 16).replace(/[:T]/g, '-');
+      const uri = `${FileSystem.cacheDirectory}map-runner-${stamp}.gpx`;
+      await FileSystem.writeAsStringAsync(uri, buildGpx(trail, `Map Runner ${date.toLocaleDateString()}`));
+      await Sharing.shareAsync(uri, {
+        mimeType: 'application/gpx+xml',
+        dialogTitle: 'Export run (GPX)',
+      });
+    } catch (e) {
+      Alert.alert('Export failed', String(e));
+    }
+  }
+
   function toggleMute() {
     setMuted(!isMuted());
     setMutedUi(isMuted());
@@ -445,6 +471,7 @@ function Main() {
                 : ''}
             </Text>
             <View style={styles.row}>
+              <Btn label="Export GPX" onPress={exportGpx} />
               <Btn label="New Route" primary onPress={clearAll} />
             </View>
           </>
