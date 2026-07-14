@@ -444,12 +444,18 @@ function guide(here) {
   if (!m) return;
   const distToTurn = m.distAlong - best.along;
 
+  // Park/plaza path networks produce clusters of unnamed micro-turns; speak
+  // only the first of a cluster so the voice stays calm (banner still shows).
+  const prevM = maneuvers[run.nextManeuver - 1];
+  const quiet = /the walkway|the crosswalk|the path/i.test(m.instruction) &&
+    prevM && (m.distAlong - prevM.distAlong) < 60;
+
   if (distToTurn <= NOW_DIST_M && !run.announcedNow.has(run.nextManeuver)) {
     run.announcedNow.add(run.nextManeuver);
-    speak(m.instruction, true);
+    if (!quiet) speak(m.instruction, true);
   } else if (distToTurn <= ALERT_DIST_M && !run.alerted.has(run.nextManeuver)) {
     run.alerted.add(run.nextManeuver);
-    speak(`In ${spokenFeet(distToTurn)}, ${lowerFirst(m.alert)}`);
+    if (!quiet) speak(`In ${spokenFeet(distToTurn)}, ${lowerFirst(m.alert)}`);
   }
   updateTurnCard(distToTurn);
 }
@@ -483,7 +489,7 @@ function updateTurnCard(distToTurn) {
   $('turn-icon').textContent = TURN_ICONS[m.type] || '•';
   $('turn-instruction').textContent = m.instruction;
   $('turn-dist').textContent = distToTurn != null
-    ? `in ${Math.round(distToTurn * 3.28084 / 10) * 10} ft` : '';
+    ? `in ${Math.max(0, Math.round(distToTurn * 3.28084 / 10) * 10)} ft` : '';
 }
 
 function pauseRun() {
