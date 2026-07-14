@@ -274,12 +274,20 @@ function guide(here: LatLng): void {
   }
   const distToTurn = m.distAlong - best.along;
 
+  // Park/plaza path networks produce clusters of unnamed micro-turns; speak
+  // only the first of a cluster so the voice stays calm (banner still shows).
+  const prev = maneuvers[next - 1];
+  const quiet =
+    /the walkway|the crosswalk|the path/i.test(m.instruction) &&
+    prev != null &&
+    m.distAlong - prev.distAlong < 60;
+
   if (distToTurn <= NOW_DIST_M && !internal.announcedNow.has(next)) {
     internal.announcedNow.add(next);
-    speak(m.instruction, true);
+    if (!quiet) speak(m.instruction, true);
   } else if (distToTurn <= ALERT_DIST_M && !internal.alerted.has(next)) {
     internal.alerted.add(next);
-    speak(`In ${spokenFeet(distToTurn)}, ${lowerFirst(m.alert)}`);
+    if (!quiet) speak(`In ${spokenFeet(distToTurn)}, ${lowerFirst(m.alert)}`);
   }
   state = { ...state, nextManeuverIdx: next, offRoute: false, distToTurn };
 }

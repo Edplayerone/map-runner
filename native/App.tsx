@@ -366,7 +366,7 @@ function Main() {
             <View style={{ flex: 1 }}>
               {run.distToTurn != null && !run.arrived && (
                 <Text style={styles.turnDist}>
-                  in {Math.round((run.distToTurn * 3.28084) / 10) * 10} ft
+                  in {Math.max(0, Math.round((run.distToTurn * 3.28084) / 10) * 10)} ft
                 </Text>
               )}
               <Text style={styles.turnText}>
